@@ -1,0 +1,6 @@
+Percent of Bases Mapped to Genome (%),[Sample Information],Bases Mapped to Genome (%)
+Percent of Bases Mapped to ROI (%),[Sample Information],Bases Mapped to ROI (%)
+Average High Quality Distinct Coverage,[Sample Information],Average High Quality Distinct Coverage
+Average High Quality Total Coverage,[Sample Information],Average High Quality Total Coverage
+% Exons with > 525 Distinct Coverage,[Sample Information],% exons with coverage >525 Redundant Distinct Coverage
+Contamination Status,[Sample Contamination Detection QC],Contamination Status
