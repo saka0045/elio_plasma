@@ -23,52 +23,51 @@ def main():
         "-o", dest="output_directory", required=True,
         help="Full path to the directory to save the result file"
     )
-    parser.add_argument(
-        "-f", dest="metric_file_path", required=True,
-        help="Full path to the metrics.csv file"
-    )
 
     args = parser.parse_args()
 
     input_directory = os.path.normpath(args.input_directory)
     output_directory = os.path.normpath(args.output_directory)
-    metric_file_path = os.path.abspath(args.metric_file_path)
 
     # Parse the csv file
     result_dict, sample_list = parse_pgdx_csv(input_directory)
 
     # Create aggregate result csv file
-    make_aggregate_result_file(metric_file_path, output_directory, result_dict, sample_list)
+    make_aggregate_result_file(output_directory, result_dict)
 
 
-def make_aggregate_result_file(metric_file_path, output_directory, result_dict, sample_list):
+def make_aggregate_result_file(output_directory, result_dict):
     """
     Aggregate the desired metrics and output into a csv file
-    :param metric_file_path:
     :param output_directory:
     :param result_dict:
-    :param sample_list:
     :return:
     """
     result_file = open(output_directory + "/elio_plasma_aggregate_results.csv", "w")
-    # Make the header row with sample name
-    for sample in sample_list:
-        result_file.write("," + sample)
-    result_file.write("\n")
-    # Open the metric file to see which metrics needs to be written
-    metric_file = open(metric_file_path, "r")
-    for line in metric_file:
-        line = line.rstrip()
-        line_item = line.split(",")
-        metric_header = line_item[0]
-        metric_category = line_item[1]
-        metric = line_item[2]
-        result_file.write(metric_header)
-        for sample in sample_list:
-            result_file.write("," + result_dict[sample][metric_category][metric])
-        result_file.write("\n")
+    # Make the header row
+    result_file.write("Sample,"
+                      "Percent of Bases Mapped to Genome (%),"
+                      "Percent of Bases Mapped to ROI (%),"
+                      "Average High Quality Distinct Coverage,"
+                      "Average High Quality Total Coverage,"
+                      "% Exons with > 525 Distinct Coverage,"
+                      "Identified Sequences per Sample (%),"
+                      "Contamination Status\n")
+    # Iterate through the result_dict and pull information
+    for sample in result_dict.keys():
+        percent_bases_mapped_to_genome = result_dict[sample]["[Sample Information]"]["Bases Mapped to Genome (%)"]
+        percent_bases_mapped_to_roi = result_dict[sample]["[Sample Information]"]["Bases Mapped to ROI (%)"]
+        average_hq_distinct_cov = result_dict[sample]["[Sample Information]"]["Average High Quality Distinct Coverage"]
+        average_hp_total_cov = result_dict[sample]["[Sample Information]"]["Average High Quality Total Coverage"]
+        percent_exons = \
+            result_dict[sample]["[Sample Information]"]["% exons with coverage >525 Redundant Distinct Coverage"]
+        identified_sequences_per_sample = \
+            result_dict[sample]["[Sample Quality Metrics]"]["Identified Sequences per Sample (%)"]
+        contamination_status = result_dict[sample]["[Sample Contamination Detection QC]"]["Contamination Status"]
+        line_to_write = [sample, percent_bases_mapped_to_genome, percent_bases_mapped_to_roi, average_hq_distinct_cov,
+                         average_hp_total_cov, percent_exons, identified_sequences_per_sample, contamination_status]
+        result_file.write(",".join(line_to_write) + "\n")
     result_file.close()
-    metric_file.close()
 
 
 def parse_pgdx_csv(input_directory):
