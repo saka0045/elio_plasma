@@ -52,6 +52,7 @@ def make_aggregate_result_file(output_directory, result_dict):
                       "Average High Quality Total Coverage,"
                       "% Exons with > 525 Distinct Coverage,"
                       "Identified Sequences per Sample (%),"
+                      "Cluster Density (K/mm2),"
                       "Contamination Status\n")
     # Iterate through the result_dict and pull information
     for sample in result_dict.keys():
@@ -63,9 +64,11 @@ def make_aggregate_result_file(output_directory, result_dict):
             result_dict[sample]["[Sample Information]"]["% exons with coverage >525 Redundant Distinct Coverage"]
         identified_sequences_per_sample = \
             result_dict[sample]["[Sample Quality Metrics]"]["Identified Sequences per Sample (%)"]
+        cluster_density = result_dict[sample]["[Run Quality Metrics]"]["Cluster Density (K/mm2)"]
         contamination_status = result_dict[sample]["[Sample Contamination Detection QC]"]["Contamination Status"]
         line_to_write = [sample, percent_bases_mapped_to_genome, percent_bases_mapped_to_roi, average_hq_distinct_cov,
-                         average_hp_total_cov, percent_exons, identified_sequences_per_sample, contamination_status]
+                         average_hp_total_cov, percent_exons, identified_sequences_per_sample, cluster_density,
+                         contamination_status]
         result_file.write(",".join(line_to_write) + "\n")
     result_file.close()
 
